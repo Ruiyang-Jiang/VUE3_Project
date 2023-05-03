@@ -136,7 +136,7 @@
           </div>
         </div>  
         <br><br>
-        <el-button type="primary" @click="UpdateScene">update current scene</el-button><el-button type="primary" @click="Blackout">blackout</el-button>
+        <el-button class="buttons" type="primary" @click="UpdateScene">update current scene</el-button>
       </el-footer>
     </el-container>
 
@@ -173,7 +173,7 @@ export default defineComponent({
       color6: '#000000', // default color
       circleTop: 0,
       circleLeft: 0,
-      URL:'192.168.1.20:3000',
+      URL:'192.168.1.13:3000',
 
       form: {
         name: "",
@@ -255,7 +255,7 @@ export default defineComponent({
       };
       const serverUrl = this.URL; // Replace with your actual server URL
       axios.post(`http://${serverUrl}/light-queue`, CreateFixtureRequest);
-      //console.log(0, data);
+      console.log(0, data);
     },
     showRGBSCircle2() {
       this.isShowRGBSCircle2 = !this.isShowRGBSCircle2;
@@ -490,7 +490,6 @@ export default defineComponent({
       },
       
       handleSceneClick(index:number) {
-        this.playCurrentScene();
         this.callTestUpdateCurrentScene(index);
       },
     async callTestUpdateCurrentScene(index:number) {
@@ -504,6 +503,7 @@ export default defineComponent({
     async playCurrentScene() {
       console.log("playcurrent");
       const serverUrl = this.URL;
+      //console.log(serverUrl);
       axios.get(`http://${serverUrl}/play-scene`);
     },
 
@@ -531,9 +531,10 @@ export default defineComponent({
 
     async UpdateScene(){
       console.log("update scene");
-      this.blackout();
+      // this.blackout();
       const serverUrl = this.URL;
       axios.get(`http://${serverUrl}/create-fixture`);
+      console.log("after update");
     },
 
     async fetchScenes() {
@@ -552,9 +553,11 @@ export default defineComponent({
     },
 
     async Blackout(){
+      const UpdateCurrentSceneRequest ={name:'nihao',};
       const serverUrl = this.URL;
       console.log("blackout");
-      axios.get(`http://${serverUrl}/blackout`);
+      //this.blackout();
+      await axios.post(`http://${serverUrl}/blackout`,UpdateCurrentSceneRequest);
     }
   },
     computed: {
@@ -807,7 +810,7 @@ export default defineComponent({
   background-color: blue;
   color: white;
 }
-.PlayCurrentScene{
+.buttons{
   margin-bottom: 100px;
 }
 
