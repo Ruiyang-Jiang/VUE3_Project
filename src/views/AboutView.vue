@@ -329,8 +329,8 @@ export default defineComponent({
       const uint8Array = new Uint8Array(11);
       uint8Array[0] = this.left1;  console.log("send:0",uint8Array[0]);
       uint8Array[1] = this.top1;   console.log("send:1",uint8Array[1]);
-      uint8Array[2] = this.circleSize1;  console.log("send:2",uint8Array[2]);
-      uint8Array[3] = 100;
+      uint8Array[2] = 100;
+      uint8Array[3] = this.circleSize1;  console.log("send:3",uint8Array[3]);
       uint8Array[4] = 255;
       uint8Array[5] = 0;
       uint8Array[10] = 0;
@@ -391,8 +391,8 @@ export default defineComponent({
       const uint8Array = new Uint8Array(11);
       uint8Array[0] = this.left2;  console.log("send",uint8Array[0]);
       uint8Array[1] = this.top2;   console.log("send",uint8Array[1]);
-      uint8Array[2] = this.circleSize2;  console.log("send:2",uint8Array[2]);
-      uint8Array[3] = 100;
+      uint8Array[2] = 100;
+      uint8Array[3] = this.circleSize2;  console.log("send:3",uint8Array[3]);
       uint8Array[4] = 255;
       uint8Array[5] = 0;
       uint8Array[10] = 0;
