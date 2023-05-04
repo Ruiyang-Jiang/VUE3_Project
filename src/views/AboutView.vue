@@ -563,21 +563,29 @@ export default defineComponent({
 
     adjustCircleSize(e: WheelEvent) {
       if (e.deltaY < 0) {
-        // scrolling up, increase size
-        this.circleSize1 += 10; // adjust the amount of size change as needed
+        if(this.circleSize1<=240){
+          // scrolling up, increase size
+          this.circleSize1 += 10; // adjust the amount of size change as needed
+        }
       } else {
-        // scrolling down, decrease size
-        this.circleSize1 -= 10; // adjust the amount of size change as needed
+        if(this.circleSize1>=10){
+          // scrolling down, decrease size
+          this.circleSize1 -= 10; // adjust the amount of size change as needed
+        }
       }
     },
 
     adjustCircleSize2(e: WheelEvent) {
       if (e.deltaY < 0) {
-        // scrolling up, increase size
-        this.circleSize2 += 10; // adjust the amount of size change as needed
+        if(this.circleSize2<=240){
+          // scrolling up, increase size
+          this.circleSize2 += 10; // adjust the amount of size change as needed
+        }
       } else {
-        // scrolling down, decrease size
-        this.circleSize2 -= 10; // adjust the amount of size change as needed
+        if(this.circleSize2>=10){
+          // scrolling down, decrease size
+          this.circleSize2 -= 10; // adjust the amount of size change as needed
+        }
       }
     },
   },
