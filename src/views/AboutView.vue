@@ -57,7 +57,7 @@
             <el-col :span='2'>
               <div class="gutter">
                 <el-button type="primary" circle color="#FF69B4" @click="showRGBSCircleM1">RGBW_M1</el-button>
-                <div v-if="isShowRGBSCircleM1" class="RGBSCircleM1" :style="{ backgroundColor: color5}" v-drag @mousedown="updateRGBSCircleM1Position"></div>
+                <div v-if="isShowRGBSCircleM1" class="RGBSCircleM1" :style="{ backgroundColor: color5, height: circleSize1 + 'px', width: circleSize1 + 'px' }" v-drag @mousedown="updateRGBSCircleM1Position" @wheel="adjustCircleSize"></div>
               </div>
             </el-col> 
             <el-col :span='2'>
@@ -75,7 +75,7 @@
             <el-col :span='2'>
               <div class="gutter">
                 <el-button type="primary" circle color="#FF69B4" @click="showRGBSCircleM2">RGBW_M2</el-button>
-                <div v-if="isShowRGBSCircleM2" class="RGBSCircleM2" :style="{ backgroundColor: color6 }" v-drag @mousedown="updateRGBSCircleM2Position"></div>
+                <div v-if="isShowRGBSCircleM2" class="RGBSCircleM2" :style="{ backgroundColor: color6, height: circleSize2 + 'px', width: circleSize2 + 'px'  }" v-drag @mousedown="updateRGBSCircleM2Position" @wheel="adjustCircleSize2"></div>
               </div>
             </el-col>
             <el-col :span='2'>
@@ -173,8 +173,9 @@ export default defineComponent({
       color6: '#000000', // default color
       circleTop: 0,
       circleLeft: 0,
-      URL:'192.168.1.13:3000',
-
+      URL:'192.168.1.20:3000',
+      circleSize1: 100, // initial size, adjust as needed
+      circleSize2: 100,
       form: {
         name: "",
       },
@@ -326,9 +327,9 @@ export default defineComponent({
     },
     sendColorToServerM1() {
       const uint8Array = new Uint8Array(11);
-      uint8Array[0] = this.left1;  console.log("send",uint8Array[0]);
-      uint8Array[1] = this.top1;   console.log("send",uint8Array[1]);
-      uint8Array[2] = 100;
+      uint8Array[0] = this.left1;  console.log("send:0",uint8Array[0]);
+      uint8Array[1] = this.top1;   console.log("send:1",uint8Array[1]);
+      uint8Array[2] = this.circleSize1;  console.log("send:2",uint8Array[2]);
       uint8Array[3] = 100;
       uint8Array[4] = 255;
       uint8Array[5] = 0;
@@ -390,7 +391,7 @@ export default defineComponent({
       const uint8Array = new Uint8Array(11);
       uint8Array[0] = this.left2;  console.log("send",uint8Array[0]);
       uint8Array[1] = this.top2;   console.log("send",uint8Array[1]);
-      uint8Array[2] = 100;
+      uint8Array[2] = this.circleSize2;  console.log("send:2",uint8Array[2]);
       uint8Array[3] = 100;
       uint8Array[4] = 255;
       uint8Array[5] = 0;
@@ -552,13 +553,33 @@ export default defineComponent({
       console.log("get",this.scenes);
     },
 
-    async Blackout(){
-      const UpdateCurrentSceneRequest ={name:'nihao',};
-      const serverUrl = this.URL;
-      console.log("blackout");
-      //this.blackout();
-      await axios.post(`http://${serverUrl}/blackout`,UpdateCurrentSceneRequest);
-    }
+    // async Blackout(){
+    //   const UpdateCurrentSceneRequest ={name:'nihao',};
+    //   const serverUrl = this.URL;
+    //   console.log("blackout");
+    //   //this.blackout();
+    //   await axios.post(`http://${serverUrl}/blackout`,UpdateCurrentSceneRequest);
+    // },
+
+    adjustCircleSize(e: WheelEvent) {
+      if (e.deltaY < 0) {
+        // scrolling up, increase size
+        this.circleSize1 += 10; // adjust the amount of size change as needed
+      } else {
+        // scrolling down, decrease size
+        this.circleSize1 -= 10; // adjust the amount of size change as needed
+      }
+    },
+
+    adjustCircleSize2(e: WheelEvent) {
+      if (e.deltaY < 0) {
+        // scrolling up, increase size
+        this.circleSize2 += 10; // adjust the amount of size change as needed
+      } else {
+        // scrolling down, decrease size
+        this.circleSize2 -= 10; // adjust the amount of size change as needed
+      }
+    },
   },
     computed: {
       buttonClass() {
@@ -596,10 +617,16 @@ export default defineComponent({
       left1() {
         this.sendColorToServerM1();
       },
+      circleSize1(){
+        this.sendColorToServerM1();
+      },
       color6() {
         this.sendColorToServerM2();
       },
       left2() {
+        this.sendColorToServerM2();
+      },
+      circleSize2(){
         this.sendColorToServerM2();
       },
     },
