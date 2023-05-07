@@ -370,34 +370,11 @@ export default defineComponent({
       console.error("Error in test Axios request:", error);
     });
     },
-  //   onMouseMove(e: MouseEvent) {
-  //   const newLeft = (e.clientX - this.offsetX) / 5;
-  //   const newTop = (e.clientY - this.offsetY) / 5;
-
-  //   this.left1 = newLeft;
-  //   this.top1 = newTop;
-  // },
-
-  // onMouseUp() {
-  //   this.$el.removeEventListener("mousemove", this.onMouseMove);
-  //   this.$el.removeEventListener("mouseup", this.onMouseUp);
-  // },
-
-  // updateRGBSCircleM1Position(e: MouseEvent) {
-  //   const el = e.target as Element;;
-  //   if (!el) return;
-
-  //   this.offsetX = e.clientX - el.getBoundingClientRect().left;
-  //   this.offsetY = e.clientY - el.getBoundingClientRect().top;
-
-  //   this.$el.addEventListener("mousemove", this.onMouseMove);
-  //   this.$el.addEventListener("mouseup", this.onMouseUp);
-  // },
 
     updateRGBSCircleM1Position(e: MouseEvent) {
       const el = e.target as HTMLElement;
       if (!el) return;
-      // 计算初始偏移量
+      // Calculate the initial offset
       const offsetX = e.clientX - el.getBoundingClientRect().left;
       const offsetY = e.clientY - el.getBoundingClientRect().top;
 
@@ -405,23 +382,23 @@ export default defineComponent({
       let newTop = this.top1;
 
       const onMouseMove = (e: MouseEvent) => {
-       // 根据鼠标移动计算元素新位置
+       //Calculate the new position of an element based on mouse movement
         newLeft = e.clientX - offsetX;
         newTop = e.clientY - offsetY;
       };
 
       const onMouseUp = () => {
-        // 更新元素位置
+        // update element position
         this.left1 = newLeft/5;
         this.top1 = newTop/5;
         console.log("update", newLeft, newTop);
 
-        // 清除鼠标移动和鼠标抬起事件监听器
+        // Clear mousemove and mouseup event listeners
         document.removeEventListener("mousemove", onMouseMove);
         document.removeEventListener("mouseup", onMouseUp);
       };
 
-      // 添加鼠标移动和鼠标抬起事件监听器
+      // Add mouse move and mouse up event listeners
       document.addEventListener("mousemove", onMouseMove);
       document.addEventListener("mouseup", onMouseUp);
     },
@@ -462,7 +439,7 @@ export default defineComponent({
     updateRGBSCircleM2Position(e: MouseEvent) {
       const el = e.target as HTMLElement;
       if (!el) return;
-      // 计算初始偏移量
+      // Calculate the initial offset
       const offsetX = e.clientX - el.getBoundingClientRect().left;
       const offsetY = e.clientY - el.getBoundingClientRect().top;
 
@@ -470,23 +447,23 @@ export default defineComponent({
       let newTop = this.top2;
 
       const onMouseMove = (e: MouseEvent) => {
-       // 根据鼠标移动计算元素新位置
+       // Calculate the new position of an element based on mouse movement
         newLeft = e.clientX - offsetX;
         newTop = e.clientY - offsetY;
       };
 
       const onMouseUp = () => {
-        // 更新元素位置
+        // update element position
         this.left2 = newLeft/5;
         this.top2 = newTop/5;
         console.log("update", newLeft, newTop);
 
-        // 清除鼠标移动和鼠标抬起事件监听器
+        // Clear mousemove and mouseup event listeners
         document.removeEventListener("mousemove", onMouseMove);
         document.removeEventListener("mouseup", onMouseUp);
       };
 
-      // 添加鼠标移动和鼠标抬起事件监听器
+      // Add mouse move and mouse up event listeners
       document.addEventListener("mousemove", onMouseMove);
       document.addEventListener("mouseup", onMouseUp);
       
