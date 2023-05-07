@@ -124,7 +124,8 @@
         <div>
           <el-form :model="form" label-width="200px">
             <el-form-item label="preset scene name">
-              <el-input v-model="form.name" style="width: 500px;"/><!--<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Current Scene:</p>-->
+              <el-input v-model="form.name" style="width: 500px;"/> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <el-switch v-model="valuetoggle" size="large" active-text="real-time control" inactive-text="Close" @click="realtimeUpdate"/>
             </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="onSubmit">Create</el-button>
@@ -147,10 +148,11 @@ import { defineComponent,ref } from 'vue'
 import axios, { AxiosResponse } from 'axios';
 import tinycolor from 'tinycolor2';
 import draggable from "vuedraggable";
-import protobuf from "protobufjs";
+
 export default defineComponent({
   data() {
     return {
+      value: ref(true),
       isShowCircle1: false,
       isShowCircle2: false,
       isShowCircle3: false,
@@ -164,8 +166,9 @@ export default defineComponent({
       isShowRGBSCircle4: false,
       isShowRGBSCircleM1: false,
       isShowRGBSCircleM2: false,
-      showColorPicker: false,
       color1: '#000000', // default color
+      
+      initialColor: 'rgba(0,0,0,1)',
       color2: '#000000', // default color
       color3: '#000000', // default color
       color4: '#000000', // default color
@@ -186,6 +189,8 @@ export default defineComponent({
       left2: 0,
       top2: 0,
       scenes: [] as string[],
+      valuetoggle: false, // Set the default value to false
+      debounceTimeout: undefined as number | undefined,
     };
   },
   methods: {
@@ -208,7 +213,6 @@ export default defineComponent({
       this.isShowCircle6 = !this.isShowCircle6;
       if (this.isShowCircle6) {
         const a = 255;
-
         const data = new Uint8Array([a]);
         const CreateFixtureRequest = {
           fixture: {
@@ -256,7 +260,7 @@ export default defineComponent({
       };
       const serverUrl = this.URL; // Replace with your actual server URL
       axios.post(`http://${serverUrl}/light-queue`, CreateFixtureRequest);
-      console.log(0, data);
+      console.log("s1", data);
     },
     showRGBSCircle2() {
       this.isShowRGBSCircle2 = !this.isShowRGBSCircle2;
@@ -277,7 +281,7 @@ export default defineComponent({
       };
       const serverUrl = this.URL; // Replace with your actual server URL
       axios.post(`http://${serverUrl}/light-queue`, CreateFixtureRequest);
-      //console.log(2,data); 
+      console.log("s2",data); 
     },
     showRGBSCircle3() {
       this.isShowRGBSCircle3 = !this.isShowRGBSCircle3;
@@ -298,7 +302,7 @@ export default defineComponent({
       };
       const serverUrl = this.URL; // Replace with your actual server URL
       axios.post(`http://${serverUrl}/light-queue`, CreateFixtureRequest);
-      //console.log(3,data);
+      console.log("s3",data);
     },
     showRGBSCircle4() {
       this.isShowRGBSCircle4 = !this.isShowRGBSCircle4
@@ -319,7 +323,7 @@ export default defineComponent({
       };
       const serverUrl = this.URL; // Replace with your actual server URL
       axios.post(`http://${serverUrl}/light-queue`, CreateFixtureRequest);
-      //console.log(5,data);
+      console.log("s4",data);
     },
 
     showRGBSCircleM1() {
@@ -340,6 +344,7 @@ export default defineComponent({
       uint8Array[7] = color._g;
       uint8Array[8] = color._b;
       uint8Array[9] = Math.round(color._a * 255);
+      console.log("moving1",uint8Array);
 
       const CreateFixtureRequest = {
         fixture: {
@@ -349,9 +354,46 @@ export default defineComponent({
       };
       const serverUrl = this.URL; // Replace with your actual server URL
 
-      axios.post(`http://${serverUrl}/light-queue`, CreateFixtureRequest);
+      //axios.post(`http://${serverUrl}/light-queue`, CreateFixtureRequest);
 
+      axios.post(`http://${serverUrl}/light-queue`, CreateFixtureRequest).then((response) => {console.log("Request successful:", response);
+  })
+  .catch((error) => {
+    console.error("Error in Axios request:", error);
+  });
+  const testUrl = 'https://jsonplaceholder.typicode.com/posts';
+  axios.post(testUrl, CreateFixtureRequest)
+    .then((response) => {
+      console.log("Test request successful:", response);
+    })
+    .catch((error) => {
+      console.error("Error in test Axios request:", error);
+    });
     },
+  //   onMouseMove(e: MouseEvent) {
+  //   const newLeft = (e.clientX - this.offsetX) / 5;
+  //   const newTop = (e.clientY - this.offsetY) / 5;
+
+  //   this.left1 = newLeft;
+  //   this.top1 = newTop;
+  // },
+
+  // onMouseUp() {
+  //   this.$el.removeEventListener("mousemove", this.onMouseMove);
+  //   this.$el.removeEventListener("mouseup", this.onMouseUp);
+  // },
+
+  // updateRGBSCircleM1Position(e: MouseEvent) {
+  //   const el = e.target as Element;;
+  //   if (!el) return;
+
+  //   this.offsetX = e.clientX - el.getBoundingClientRect().left;
+  //   this.offsetY = e.clientY - el.getBoundingClientRect().top;
+
+  //   this.$el.addEventListener("mousemove", this.onMouseMove);
+  //   this.$el.addEventListener("mouseup", this.onMouseUp);
+  // },
+
     updateRGBSCircleM1Position(e: MouseEvent) {
       const el = e.target as HTMLElement;
       if (!el) return;
@@ -364,14 +406,14 @@ export default defineComponent({
 
       const onMouseMove = (e: MouseEvent) => {
        // 根据鼠标移动计算元素新位置
-        newLeft = (e.clientX - offsetX)/5;
-        newTop = (e.clientY - offsetY)/5;
+        newLeft = e.clientX - offsetX;
+        newTop = e.clientY - offsetY;
       };
 
       const onMouseUp = () => {
         // 更新元素位置
-        this.left1 = newLeft;
-        this.top1 = newTop;
+        this.left1 = newLeft/5;
+        this.top1 = newTop/5;
         console.log("update", newLeft, newTop);
 
         // 清除鼠标移动和鼠标抬起事件监听器
@@ -429,14 +471,14 @@ export default defineComponent({
 
       const onMouseMove = (e: MouseEvent) => {
        // 根据鼠标移动计算元素新位置
-        newLeft = (e.clientX - offsetX)/5;
-        newTop = (e.clientY - offsetY)/5;
+        newLeft = e.clientX - offsetX;
+        newTop = e.clientY - offsetY;
       };
 
       const onMouseUp = () => {
         // 更新元素位置
-        this.left2 = newLeft;
-        this.top2 = newTop;
+        this.left2 = newLeft/5;
+        this.top2 = newTop/5;
         console.log("update", newLeft, newTop);
 
         // 清除鼠标移动和鼠标抬起事件监听器
@@ -494,7 +536,7 @@ export default defineComponent({
         this.callTestUpdateCurrentScene(index);
       },
     async callTestUpdateCurrentScene(index:number) {
-      console.log("call test update");
+      console.log("update current scene");
       const sceneName = this.buttons[index];
       const UpdateCurrentSceneRequest ={name:sceneName,};
       const serverUrl = this.URL; // Replace with your actual server URL
@@ -509,12 +551,6 @@ export default defineComponent({
     },
 
     blackout() {
-      this.color1 = '#000000';
-      this.color2 = '#000000';
-      this.color3 = '#000000';
-      this.color4 = '#000000';
-      this.color5 = '#000000';
-      this.color6 = '#000000';
       this.isShowCircle1 = false;
       this.isShowCircle2 = false;
       this.isShowCircle3 = false;
@@ -532,7 +568,7 @@ export default defineComponent({
 
     async UpdateScene(){
       console.log("update scene");
-      // this.blackout();
+      this.blackout();
       const serverUrl = this.URL;
       axios.get(`http://${serverUrl}/create-fixture`);
       console.log("after update");
@@ -574,6 +610,12 @@ export default defineComponent({
         }
       }
     },
+    debouncedSendColorToServerM1() {
+      clearTimeout(this.debounceTimeout);
+      this.debounceTimeout = setTimeout(() => {
+        this.sendColorToServerM1();
+      }, 300); // Adjust the debounce delay as needed (300ms here)
+    },
 
     adjustCircleSize2(e: WheelEvent) {
       if (e.deltaY < 0) {
@@ -588,6 +630,23 @@ export default defineComponent({
         }
       }
     },
+    debouncedSendColorToServerM2() {
+      clearTimeout(this.debounceTimeout);
+      this.debounceTimeout = setTimeout(() => {
+        this.sendColorToServerM2();
+      }, 300); // Adjust the debounce delay as needed (300ms here)
+    },
+    sendToggleValueToServer() {
+      const ToggleContent = { buttonProperty: this.valuetoggle };
+      const serverUrl = this.URL; console.log(ToggleContent);
+      axios.post(`http://${serverUrl}/toggle-debug-mode`, ToggleContent);
+    },
+
+    realtimeUpdate(){
+      const ToggleContent = { buttonProperty: this.valuetoggle }; // Use the current value of the el-switch
+      const serverUrl = this.URL; console.log(ToggleContent);
+      axios.post(`http://${serverUrl}/toggle-debug-mode`,ToggleContent);
+    }
   },
     computed: {
       buttonClass() {
@@ -601,6 +660,7 @@ export default defineComponent({
     async mounted() {
       // Get the scenes when the component is first created
       await this.fetchScenes();
+      this.sendToggleValueToServer();
     },
     components: {
       draggable,
@@ -625,9 +685,9 @@ export default defineComponent({
       left1() {
         this.sendColorToServerM1();
       },
-      circleSize1(){
-        this.sendColorToServerM1();
-      },
+      circleSize1() {
+      this.debouncedSendColorToServerM1();
+    },
       color6() {
         this.sendColorToServerM2();
       },
@@ -635,7 +695,7 @@ export default defineComponent({
         this.sendColorToServerM2();
       },
       circleSize2(){
-        this.sendColorToServerM2();
+        this.debouncedSendColorToServerM2();
       },
     },
     
